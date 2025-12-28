@@ -2,9 +2,17 @@
 
 ![SawitDB Banner](sawitdb.jpg)
 
+
 **SawitDB** is a unique database solution stored in `.sawit` binary files.
 
 The system features a custom **Paged Heap File** architecture similar to SQLite, using fixed-size 4KB pages to ensure efficient memory usage. What differentiates SawitDB is its unique **Agricultural Query Language (AQL)**, which replaces standard SQL keywords with Indonesian farming terminology.
+
+**🚨 Emergency: Aceh Flood Relief**
+Please support our brothers and sisters in Aceh.
+
+[![Kitabisa](https://img.shields.io/badge/Kitabisa-Bantu%20Aceh-blue?style=flat&logo=heart)](https://kitabisa.com/campaign/donasipedulibanjiraceh)
+
+*Organized by Human Initiative Aceh*
 
 ## Features
 
@@ -161,9 +169,8 @@ Benchmark results on standard hardware (5000 records):
 
 *Data Size: 188KB for 5000 records.*
 
-## Donation 💰
-
-Support SawitDB dev
+## Support Developer
+- [![Saweria](https://img.shields.io/badge/Saweria-Support%20Me-orange?style=flat&logo=ko-fi)](https://saweria.co/patradev)
 
 - **BTC**: `12EnneEriimQey3cqvxtv4ZUbvpmEbDinL`
 - **BNB Smart Chain (BEP20)**: `0x471a58a2b5072cb50e3761dba3e15d19f080bdbc`

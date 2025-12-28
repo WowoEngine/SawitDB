@@ -36,7 +36,7 @@ Ensure you have Node.js installed. Clone the repository or copy the `WowoEngine.
 
 ```bash
 # Clone
-git clone https://github.com/your-repo/sawit-db.git
+git clone https://github.com/WowoEngine/SawitDB.git
 ```
 
 ## Usage

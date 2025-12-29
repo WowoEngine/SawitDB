@@ -1,0 +1,52 @@
+{
+  "name": "sawitdb",
+  "version": "2.0.0",
+  "description": "A networked document database with Indonesian Agricultural Query Language (AQL) - Network Edition",
+  "main": "WowoEngine.js",
+  "scripts": {
+    "start": "node start_server.js",
+    "server": "node start_server.js",
+    "test": "node test_enhanced.js",
+    "example": "node example_client.js",
+    "cli": "node cli_client.js sawitdb://localhost:7878/default",
+    "dev": "SAWIT_LOG_LEVEL=debug node start_server.js"
+  },
+  "keywords": [
+    "database",
+    "document-database",
+    "nosql",
+    "json",
+    "btree",
+    "indexing",
+    "tcp-server",
+    "networking",
+    "agricultural",
+    "indonesian",
+    "mongodb-like",
+    "embedded-database"
+  ],
+  "author": "SawitDB Community",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/YourUsername/SawitDB.git"
+  },
+  "engines": {
+    "node": ">=12.0.0"
+  },
+  "bin": {
+    "sawitdb-server": "./start_server.js",
+    "sawitdb-cli": "./cli_client.js"
+  },
+  "files": [
+    "WowoEngine.js",
+    "SawitServer.js",
+    "SawitClient.js",
+    "BTreeIndex.js",
+    "start_server.js",
+    "cli_client.js",
+    "cli_wowo.js",
+    "README.md",
+    "README_NETWORK.md"
+  ]
+}

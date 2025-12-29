@@ -1,5 +1,5 @@
 const readline = require('readline');
-const SawitDB = require('./WowoEngine');
+const SawitDB = require('../src/WowoEngine');
 const path = require('path');
 
 const dbPath = path.join(__dirname, 'example.sawit');

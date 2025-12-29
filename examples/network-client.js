@@ -4,7 +4,7 @@
  * Demonstrates how to connect to SawitDB server and perform operations
  */
 
-const SawitClient = require('./SawitClient');
+const SawitClient = require('../src/SawitClient');
 
 async function main() {
     console.log('╔══════════════════════════════════════════════════╗');

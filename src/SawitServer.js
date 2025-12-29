@@ -12,7 +12,7 @@ class SawitServer {
         // Validate and set configuration
         this.port = this._validatePort(config.port || 7878);
         this.host = config.host || '0.0.0.0';
-        this.dataDir = config.dataDir || path.join(__dirname, 'data');
+        this.dataDir = config.dataDir || path.join(__dirname, '../data');
         this.databases = new Map(); // Map of database name -> SawitDB instance
         this.clients = new Set();
         this.server = null;
@@ -27,7 +27,7 @@ class SawitServer {
             errors: 0,
             startTime: Date.now()
         };
-        
+
         // Ensure data directory exists
         if (!fs.existsSync(this.dataDir)) {
             fs.mkdirSync(this.dataDir, { recursive: true });
@@ -49,7 +49,7 @@ class SawitServer {
         const levels = { debug: 0, info: 1, warn: 2, error: 3 };
         const currentLevel = levels[this.logLevel] || 1;
         const msgLevel = levels[level] || 1;
-        
+
         if (msgLevel >= currentLevel) {
             const timestamp = new Date().toISOString();
             const prefix = level.toUpperCase().padEnd(5);
@@ -79,12 +79,12 @@ class SawitServer {
 
     stop() {
         console.log('[Server] Shutting down...');
-        
+
         // Close all client connections
         for (const client of this.clients) {
             client.destroy();
         }
-        
+
         // Close server
         if (this.server) {
             this.server.close(() => {
@@ -95,7 +95,7 @@ class SawitServer {
 
     _handleConnection(socket) {
         const clientId = `${socket.remoteAddress}:${socket.remotePort}`;
-        
+
         // Check connection limit
         if (this.clients.size >= this.maxConnections) {
             this._log('warn', `Connection limit reached. Rejecting ${clientId}`);
@@ -106,22 +106,22 @@ class SawitServer {
             socket.end();
             return;
         }
-        
+
         this._log('info', `Client connected: ${clientId}`);
         this.stats.totalConnections++;
         this.stats.activeConnections++;
-        
+
         this.clients.add(socket);
         socket.clientId = clientId;
         socket.connectedAt = Date.now();
-        
+
         let authenticated = !this.auth; // If no auth required, auto-authenticate
         let currentDatabase = null;
         let buffer = '';
 
         socket.on('data', (data) => {
             buffer += data.toString();
-            
+
             // Prevent buffer overflow attacks
             if (buffer.length > 1048576) { // 1MB limit
                 this._log('warn', `Buffer overflow attempt from ${clientId}`);
@@ -129,17 +129,17 @@ class SawitServer {
                 socket.destroy();
                 return;
             }
-            
+
             // Process complete messages (delimited by newline)
             let newlineIndex;
             while ((newlineIndex = buffer.indexOf('\n')) !== -1) {
                 const message = buffer.substring(0, newlineIndex);
                 buffer = buffer.substring(newlineIndex + 1);
-                
+
                 try {
                     const request = JSON.parse(message);
                     this._log('debug', `Request from ${clientId}`, request);
-                    
+
                     // Handle with timeout
                     this._handleRequest(socket, request, {
                         authenticated,
@@ -198,31 +198,31 @@ class SawitServer {
             case 'auth':
                 this._handleAuth(socket, payload, context);
                 break;
-            
+
             case 'use':
                 this._handleUseDatabase(socket, payload, context);
                 break;
-            
+
             case 'query':
                 this._handleQuery(socket, payload, context);
                 break;
-            
+
             case 'ping':
                 this._sendResponse(socket, { type: 'pong', timestamp: Date.now() });
                 break;
-            
+
             case 'list_databases':
                 this._handleListDatabases(socket);
                 break;
-            
+
             case 'drop_database':
                 this._handleDropDatabase(socket, payload, context);
                 break;
-            
+
             case 'stats':
                 this._handleStats(socket);
                 break;
-            
+
             default:
                 this._sendError(socket, `Unknown request type: ${type}`);
         }
@@ -237,7 +237,7 @@ class SawitServer {
             databases: this.databases.size,
             memoryUsage: process.memoryUsage()
         };
-        
+
         this._sendResponse(socket, {
             type: 'stats',
             stats
@@ -249,7 +249,7 @@ class SawitServer {
         const minutes = Math.floor(seconds / 60);
         const hours = Math.floor(minutes / 60);
         const days = Math.floor(hours / 24);
-        
+
         if (days > 0) return `${days}d ${hours % 24}h`;
         if (hours > 0) return `${hours}h ${minutes % 60}m`;
         if (minutes > 0) return `${minutes}m ${seconds % 60}s`;
@@ -258,7 +258,7 @@ class SawitServer {
 
     _handleAuth(socket, payload, context) {
         const { username, password } = payload;
-        
+
         if (!this.auth) {
             context.setAuth(true);
             return this._sendResponse(socket, { type: 'auth_success', message: 'No authentication required' });
@@ -274,7 +274,7 @@ class SawitServer {
 
     _handleUseDatabase(socket, payload, context) {
         const { database } = payload;
-        
+
         if (!database || typeof database !== 'string') {
             return this._sendError(socket, 'Invalid database name');
         }
@@ -287,10 +287,10 @@ class SawitServer {
         try {
             const db = this._getOrCreateDatabase(database);
             context.setDatabase(database);
-            this._sendResponse(socket, { 
-                type: 'use_success', 
+            this._sendResponse(socket, {
+                type: 'use_success',
                 database,
-                message: `Switched to database '${database}'` 
+                message: `Switched to database '${database}'`
             });
         } catch (err) {
             this._sendError(socket, `Failed to use database: ${err.message}`);
@@ -309,12 +309,12 @@ class SawitServer {
             const db = this._getOrCreateDatabase(context.currentDatabase);
             const result = db.query(query);
             const duration = Date.now() - startTime;
-            
+
             this.stats.totalQueries++;
             this._log('debug', `Query executed in ${duration}ms: ${query.substring(0, 50)}...`);
-            
-            this._sendResponse(socket, { 
-                type: 'query_result', 
+
+            this._sendResponse(socket, {
+                type: 'query_result',
                 result,
                 query,
                 executionTime: duration
@@ -331,11 +331,11 @@ class SawitServer {
             const databases = fs.readdirSync(this.dataDir)
                 .filter(file => file.endsWith('.sawit'))
                 .map(file => file.replace('.sawit', ''));
-            
-            this._sendResponse(socket, { 
-                type: 'database_list', 
+
+            this._sendResponse(socket, {
+                type: 'database_list',
                 databases,
-                count: databases.length 
+                count: databases.length
             });
         } catch (err) {
             this._sendError(socket, `Failed to list databases: ${err.message}`);
@@ -351,7 +351,7 @@ class SawitServer {
 
         try {
             const dbPath = path.join(this.dataDir, `${database}.sawit`);
-            
+
             if (!fs.existsSync(dbPath)) {
                 return this._sendError(socket, `Database '${database}' does not exist`);
             }
@@ -369,10 +369,10 @@ class SawitServer {
                 context.setDatabase(null);
             }
 
-            this._sendResponse(socket, { 
-                type: 'drop_success', 
+            this._sendResponse(socket, {
+                type: 'drop_success',
                 database,
-                message: `Database '${database}' has been burned (dropped)` 
+                message: `Database '${database}' has been burned (dropped)`
             });
         } catch (err) {
             this._sendError(socket, `Failed to drop database: ${err.message}`);
@@ -408,7 +408,7 @@ if (require.main === module) {
     const server = new SawitServer({
         port: process.env.SAWIT_PORT || 7878,
         host: process.env.SAWIT_HOST || '0.0.0.0',
-        dataDir: process.env.SAWIT_DATA_DIR || path.join(__dirname, 'data'),
+        dataDir: process.env.SAWIT_DATA_DIR || path.join(__dirname, '../data'),
         // Optional auth: { username: 'petani', password: 'sawit123' }
     });
 

@@ -13,14 +13,14 @@
  *   SAWIT_AUTH - Enable authentication (format: username:password)
  */
 
-const SawitServer = require('./SawitServer');
+const SawitServer = require('../src/SawitServer');
 const path = require('path');
 
 // Parse configuration
 const config = {
     port: process.env.SAWIT_PORT || 7878,
     host: process.env.SAWIT_HOST || '0.0.0.0',
-    dataDir: process.env.SAWIT_DATA_DIR || path.join(__dirname, 'data')
+    dataDir: process.env.SAWIT_DATA_DIR || path.join(__dirname, '../data')
 };
 
 // Parse authentication if provided

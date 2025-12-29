@@ -1,4 +1,4 @@
-const SawitDB = require('./WowoEngine');
+const SawitDB = require('../src/WowoEngine');
 const path = require('path');
 const fs = require('fs');
 

@@ -12,7 +12,7 @@
  */
 
 const readline = require('readline');
-const SawitClient = require('./SawitClient');
+const SawitClient = require('../src/SawitClient');
 
 const connStr = process.argv[2] || 'sawitdb://localhost:7878/default';
 

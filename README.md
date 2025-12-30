@@ -67,7 +67,7 @@ Use [SawitClient](#client-api) or any interactive session.
 
 ## Dual Syntax Support
 
-SawitDB 2.2 introduces the **Generic Syntax** alongside the classic **Agricultural Query Language (AQL)**, making it easier for developers familiar with standard SQL to adopt.
+SawitDB 2.3 introduces the **Generic Syntax** alongside the classic **Agricultural Query Language (AQL)**, making it easier for developers familiar with standard SQL to adopt.
 
 | Operation | Agricultural Query Language (AQL) | Generic SQL (Standard) |
 | :--- | :--- | :--- |

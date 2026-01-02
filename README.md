@@ -2,6 +2,13 @@
 
 ![SawitDB Banner](docs/sawitdb.jpg)
 
+<div align="center">
+
+[![Docs](https://img.shields.io/badge/Docs-Read%20Now-blue?style=for-the-badge&logo=googledocs)](docs/index.html)
+[![Changelog](https://img.shields.io/badge/Changelog-Read%20Updates-orange?style=for-the-badge&logo=github)](CHANGELOG.md)
+
+</div>
+
 
 **SawitDB** is a unique database solution stored in `.sawit` binary files.
 

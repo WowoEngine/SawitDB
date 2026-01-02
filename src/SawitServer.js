@@ -65,7 +65,7 @@ class SawitServer {
 
         this.server.listen(this.port, this.host, () => {
             console.log(`╔══════════════════════════════════════════════════╗`);
-            console.log(`║         🌴 SawitDB Server - Version 2.3          ║`);
+            console.log(`║         🌴 SawitDB Server - Version 2.4          ║`);
             console.log(`╚══════════════════════════════════════════════════╝`);
             console.log(`[Server] Listening on ${this.host}:${this.port}`);
             console.log(`[Server] Protocol: sawitdb://${this.host}:${this.port}/[database]`);
@@ -181,7 +181,7 @@ class SawitServer {
         this._sendResponse(socket, {
             type: 'welcome',
             message: 'SawitDB Server',
-            version: '2.3',
+            version: '2.4',
             protocol: 'sawitdb'
         });
     }
@@ -298,7 +298,7 @@ class SawitServer {
     }
 
     _handleQuery(socket, payload, context) {
-        const { query } = payload;
+        const { query, params } = payload;
         const startTime = Date.now();
 
         // --- Intercept Server-Level Commands (Wilayah Management) ---
@@ -480,7 +480,7 @@ class SawitServer {
 
         try {
             const db = this._getOrCreateDatabase(context.currentDatabase);
-            const result = db.query(query);
+            const result = db.query(query, params);
             const duration = Date.now() - startTime;
 
             this.stats.totalQueries++;

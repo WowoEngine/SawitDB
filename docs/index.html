@@ -79,7 +79,7 @@
             <a href="#syntax" class="text-white text-lg font-medium hover:text-sawit-400" onclick="toggleMenu()">AQL
                 Syntax</a>
             <a href="#network" class="text-white text-lg font-medium hover:text-sawit-400"
-                onclick="toggleMenu()">Network Edition</a>
+                onclick="toggleMenu()">Network</a>
             <a href="#client-api" class="text-white text-lg font-medium hover:text-sawit-400"
                 onclick="toggleMenu()">Client API</a>
             <a href="#cli" class="text-white text-lg font-medium hover:text-sawit-400" onclick="toggleMenu()">CLI
@@ -90,46 +90,46 @@
     <div class="flex min-h-screen">
         <!-- Desktop Sidebar -->
         <aside class="hidden lg:flex flex-col w-72 bg-sawit-900 fixed h-screen overflow-y-auto z-30 shadow-xl">
-            <div class="p-6 text-center border-b border-sawit-800">
+            <div class="p-6 border-b border-sawit-800">
                 <h1 class="text-2xl font-bold text-white tracking-wide">SawitDB</h1>
             </div>
 
             <nav class="flex-1 p-4 space-y-1">
                 <a href="#intro"
-                    class="flex items-center px-4 py-3 text-gray-300 hover:bg-sawit-800 hover:text-white rounded-lg transition-colors group">
+                    class="flex items-center px-4 py-3 text-gray-300 hover:bg-sawit-800 hover:text-white rounded-lg transition-colors group cursor-pointer">
                     Introduction
                 </a>
                 <a href="#features"
-                    class="flex items-center px-4 py-3 text-gray-300 hover:bg-sawit-800 hover:text-white rounded-lg transition-colors group">
+                    class="flex items-center px-4 py-3 text-gray-300 hover:bg-sawit-800 hover:text-white rounded-lg transition-colors group cursor-pointer">
                     Features
                 </a>
                 <a href="#filosofi"
-                    class="flex items-center px-4 py-3 text-gray-300 hover:bg-sawit-800 hover:text-white rounded-lg transition-colors group">
+                    class="flex items-center px-4 py-3 text-gray-300 hover:bg-sawit-800 hover:text-white rounded-lg transition-colors group cursor-pointer">
                     Filosofi
                 </a>
                 <a href="#installation"
-                    class="flex items-center px-4 py-3 text-gray-300 hover:bg-sawit-800 hover:text-white rounded-lg transition-colors group">
+                    class="flex items-center px-4 py-3 text-gray-300 hover:bg-sawit-800 hover:text-white rounded-lg transition-colors group cursor-pointer">
                     Installation
                 </a>
                 <a href="#syntax"
-                    class="flex items-center px-4 py-3 text-gray-300 hover:bg-sawit-800 hover:text-white rounded-lg transition-colors group">
+                    class="flex items-center px-4 py-3 text-gray-300 hover:bg-sawit-800 hover:text-white rounded-lg transition-colors group cursor-pointer">
                     Query Syntax
                 </a>
                 <a href="#network"
-                    class="flex items-center px-4 py-3 text-gray-300 hover:bg-sawit-800 hover:text-white rounded-lg transition-colors group">
-                    Network Edition
+                    class="flex items-center px-4 py-3 text-gray-300 hover:bg-sawit-800 hover:text-white rounded-lg transition-colors group cursor-pointer">
+                    Network
                 </a>
                 <a href="#client-api"
-                    class="flex items-center px-4 py-3 text-gray-300 hover:bg-sawit-800 hover:text-white rounded-lg transition-colors group">
+                    class="flex items-center px-4 py-3 text-gray-300 hover:bg-sawit-800 hover:text-white rounded-lg transition-colors group cursor-pointer">
                     Client API
                 </a>
                 <a href="#cli"
-                    class="flex items-center px-4 py-3 text-gray-300 hover:bg-sawit-800 hover:text-white rounded-lg transition-colors group">
+                    class="flex items-center px-4 py-3 text-gray-300 hover:bg-sawit-800 hover:text-white rounded-lg transition-colors group cursor-pointer">
                     CLI Tool
                 </a>
             </nav>
 
-            <div class="p-6 border-t border-sawit-800 text-center">
+            <div class="p-6 border-t border-sawit-800">
                 <p class="text-xs text-gray-300">&copy; 2025 SawitDB Core Team</p>
             </div>
         </aside>
@@ -221,6 +221,53 @@
                 </div>
             </section>
 
+            <!-- Benchmarks -->
+            <section id="benchmarks" class="mb-16 scroll-mt-24">
+                <h2 class="text-3xl font-bold text-gray-800 mb-8 flex items-center">
+                    Benchmark Performance
+                </h2>
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div class="p-6 bg-gray-50 border-b border-gray-100">
+                        <p class="text-sm text-gray-600">
+                            <strong>Environment:</strong> Single Thread, Windows Node.js (Local NVMe)
+                        </p>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm text-left">
+                            <thead class="text-xs text-gray-700 uppercase bg-gray-50 border-b">
+                                <tr>
+                                    <th class="px-6 py-4 font-bold">Operation</th>
+                                    <th class="px-6 py-4 font-bold">Ops/Sec</th>
+                                    <th class="px-6 py-4 font-bold">Latency (avg)</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-100">
+                                <tr class="bg-white hover:bg-gray-50">
+                                    <td class="px-6 py-4 font-medium text-gray-900">INSERT</td>
+                                    <td class="px-6 py-4 text-green-600 font-bold">~3,125</td>
+                                    <td class="px-6 py-4 text-gray-600">0.32 ms</td>
+                                </tr>
+                                <tr class="bg-white hover:bg-gray-50">
+                                    <td class="px-6 py-4 font-medium text-gray-900">SELECT (PK Index)</td>
+                                    <td class="px-6 py-4 text-green-600 font-bold">~3,846</td>
+                                    <td class="px-6 py-4 text-gray-600">0.26 ms</td>
+                                </tr>
+                                <tr class="bg-white hover:bg-gray-50">
+                                    <td class="px-6 py-4 font-medium text-gray-900">SELECT (Scan)</td>
+                                    <td class="px-6 py-4 text-green-600 font-bold">~4,762</td>
+                                    <td class="px-6 py-4 text-gray-600">0.21 ms</td>
+                                </tr>
+                                <tr class="bg-white hover:bg-gray-50">
+                                    <td class="px-6 py-4 font-medium text-gray-900">UPDATE</td>
+                                    <td class="px-6 py-4 text-green-600 font-bold">~3,571</td>
+                                    <td class="px-6 py-4 text-gray-600">0.28 ms</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
             <!-- Filosofi -->
             <section id="filosofi" class="mb-16 scroll-mt-24">
                 <div
@@ -293,7 +340,70 @@
                 <h2 class="text-3xl font-bold text-gray-800 mb-8 flex items-center">
                     Query Syntax (AQL)
                 </h2>
-                <p class="text-gray-600 mb-8">SawitDB uses intuitive farming metaphors for all database operations.</p>
+                <p class="text-gray-600 mb-8">SawitDB uses intuitive farming metaphors for all database operations. It
+                    also supports Generic SQL for easier adoption.</p>
+
+                <!-- Dual Syntax Table -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-12">
+                    <div class="p-4 bg-gray-50 border-b border-gray-100">
+                        <h3 class="font-bold text-gray-800">Dual Syntax Comparison</h3>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm text-left">
+                            <thead class="text-xs text-gray-700 uppercase bg-gray-50 border-b">
+                                <tr>
+                                    <th class="px-6 py-4 font-bold">Operation</th>
+                                    <th class="px-6 py-4 font-bold">Agricultural Query Language (AQL)</th>
+                                    <th class="px-6 py-4 font-bold">Generic SQL (Standard)</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-100">
+                                <tr class="bg-white hover:bg-gray-50">
+                                    <td class="px-6 py-4 font-medium">Create DB</td>
+                                    <td class="px-6 py-4 text-green-600 font-mono">BUKA WILAYAH sales_db</td>
+                                    <td class="px-6 py-4 text-blue-600 font-mono">CREATE DATABASE sales_db</td>
+                                </tr>
+                                <tr class="bg-white hover:bg-gray-50">
+                                    <td class="px-6 py-4 font-medium">Use DB</td>
+                                    <td class="px-6 py-4 text-green-600 font-mono">MASUK WILAYAH sales_db</td>
+                                    <td class="px-6 py-4 text-blue-600 font-mono">USE sales_db</td>
+                                </tr>
+                                <tr class="bg-white hover:bg-gray-50">
+                                    <td class="px-6 py-4 font-medium">Show DBs</td>
+                                    <td class="px-6 py-4 text-green-600 font-mono">LIHAT WILAYAH</td>
+                                    <td class="px-6 py-4 text-blue-600 font-mono">SHOW DATABASES</td>
+                                </tr>
+                                <tr class="bg-white hover:bg-gray-50">
+                                    <td class="px-6 py-4 font-medium">Create Table</td>
+                                    <td class="px-6 py-4 text-green-600 font-mono">LAHAN products</td>
+                                    <td class="px-6 py-4 text-blue-600 font-mono">CREATE TABLE products</td>
+                                </tr>
+                                <tr class="bg-white hover:bg-gray-50">
+                                    <td class="px-6 py-4 font-medium">Insert</td>
+                                    <td class="px-6 py-4 text-green-600 font-mono">TANAM KE products (...) BIBIT (...)
+                                    </td>
+                                    <td class="px-6 py-4 text-blue-600 font-mono">INSERT INTO products (...) VALUES
+                                        (...)</td>
+                                </tr>
+                                <tr class="bg-white hover:bg-gray-50">
+                                    <td class="px-6 py-4 font-medium">Select</td>
+                                    <td class="px-6 py-4 text-green-600 font-mono">PANEN * DARI products ...</td>
+                                    <td class="px-6 py-4 text-blue-600 font-mono">SELECT * FROM products ...</td>
+                                </tr>
+                                <tr class="bg-white hover:bg-gray-50">
+                                    <td class="px-6 py-4 font-medium">Update</td>
+                                    <td class="px-6 py-4 text-green-600 font-mono">PUPUK products DENGAN ...</td>
+                                    <td class="px-6 py-4 text-blue-600 font-mono">UPDATE products SET ...</td>
+                                </tr>
+                                <tr class="bg-white hover:bg-gray-50">
+                                    <td class="px-6 py-4 font-medium">Delete</td>
+                                    <td class="px-6 py-4 text-green-600 font-mono">GUSUR DARI products ...</td>
+                                    <td class="px-6 py-4 text-blue-600 font-mono">DELETE FROM products ...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
 
                 <div class="grid lg:grid-cols-2 gap-8 mb-8">
                     <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
@@ -354,7 +464,7 @@
                     </div>
                 </div>
 
-                <div class="bg-gray-900 text-gray-300 p-6 rounded-xl font-mono text-sm shadow-lg overflow-x-auto">
+                <div class="bg-gray-900 text-gray-300 p-6 rounded-xl font-mono text-sm shadow-lg overflow-x-auto mb-12">
                     <span class="text-gray-500">// Create Land</span>
                     <span class="text-green-400">LAHAN</span> sawit_blok_a
 
@@ -374,13 +484,113 @@
                     <span class="text-green-400">GUSUR DARI</span> sawit <span class="text-green-400">DIMANA</span> id =
                     99
                 </div>
+
+                <!-- Operators Table -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-12">
+                    <div class="p-4 bg-gray-50 border-b border-gray-100">
+                        <h3 class="font-bold text-gray-800">Supported Operators</h3>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm text-left">
+                            <thead class="text-xs text-gray-700 uppercase bg-gray-50 border-b">
+                                <tr>
+                                    <th class="px-6 py-4 font-bold">Operator</th>
+                                    <th class="px-6 py-4 font-bold">Syntax Example</th>
+                                    <th class="px-6 py-4 font-bold">Description</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-100">
+                                <tr class="bg-white hover:bg-gray-50">
+                                    <td class="px-6 py-4 font-medium">Comparison</td>
+                                    <td class="px-6 py-4 font-mono">=, !=, >, <,>=, <=< /td>
+                                    <td class="px-6 py-4 text-gray-600">Standard value comparison</td>
+                                </tr>
+                                <tr class="bg-white hover:bg-gray-50">
+                                    <td class="px-6 py-4 font-medium">Logical</td>
+                                    <td class="px-6 py-4 font-mono">AND, OR</td>
+                                    <td class="px-6 py-4 text-gray-600">Combine multiple conditions</td>
+                                </tr>
+                                <tr class="bg-white hover:bg-gray-50">
+                                    <td class="px-6 py-4 font-medium">In List</td>
+                                    <td class="px-6 py-4 font-mono">IN ('coffee', 'tea')</td>
+                                    <td class="px-6 py-4 text-gray-600">Matches any value in the list</td>
+                                </tr>
+                                <tr class="bg-white hover:bg-gray-50">
+                                    <td class="px-6 py-4 font-medium">Pattern</td>
+                                    <td class="px-6 py-4 font-mono">LIKE 'Jwa%'</td>
+                                    <td class="px-6 py-4 text-gray-600">Wildcard matching (%)</td>
+                                </tr>
+                                <tr class="bg-white hover:bg-gray-50">
+                                    <td class="px-6 py-4 font-medium">Range</td>
+                                    <td class="px-6 py-4 font-mono">BETWEEN 10 AND 50</td>
+                                    <td class="px-6 py-4 text-gray-600">Inclusive range check</td>
+                                </tr>
+                                <tr class="bg-white hover:bg-gray-50">
+                                    <td class="px-6 py-4 font-medium">Null Check</td>
+                                    <td class="px-6 py-4 font-mono">IS NULL, IS NOT NULL</td>
+                                    <td class="px-6 py-4 text-gray-600">Check for existence</td>
+                                </tr>
+                                <tr class="bg-white hover:bg-gray-50">
+                                    <td class="px-6 py-4 font-medium">Pagination</td>
+                                    <td class="px-6 py-4 font-mono">LIMIT 10 OFFSET 5</td>
+                                    <td class="px-6 py-4 text-gray-600">Restrict and skip rows</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Full Feature Comparison -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div class="p-4 bg-gray-50 border-b border-gray-100">
+                        <h3 class="font-bold text-gray-800">Full Feature Comparison</h3>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm text-left">
+                            <thead class="text-xs text-gray-700 uppercase bg-gray-50 border-b">
+                                <tr>
+                                    <th class="px-6 py-4 font-bold">Feature</th>
+                                    <th class="px-6 py-4 font-bold">Tani Edition (AQL)</th>
+                                    <th class="px-6 py-4 font-bold">Generic SQL</th>
+                                    <th class="px-6 py-4 font-bold">Notes</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-100">
+                                <tr class="bg-white hover:bg-gray-50">
+                                    <td class="px-6 py-4 font-medium">Create DB</td>
+                                    <td class="px-6 py-4 font-mono text-green-600">BUKA WILAYAH [db]</td>
+                                    <td class="px-6 py-4 font-mono text-blue-600">CREATE DATABASE [db]</td>
+                                    <td class="px-6 py-4 text-gray-500 text-xs">Creates .sawit file</td>
+                                </tr>
+                                <tr class="bg-white hover:bg-gray-50">
+                                    <td class="px-6 py-4 font-medium">Show Tables</td>
+                                    <td class="px-6 py-4 font-mono text-green-600">LIHAT LAHAN</td>
+                                    <td class="px-6 py-4 font-mono text-blue-600">SHOW TABLES</td>
+                                    <td class="px-6 py-4 text-gray-500 text-xs">Lists tables</td>
+                                </tr>
+                                <tr class="bg-white hover:bg-gray-50">
+                                    <td class="px-6 py-4 font-medium">Aggregation</td>
+                                    <td class="px-6 py-4 font-mono text-green-600">HITUNG SUM(x) DARI [t]</td>
+                                    <td class="px-6 py-4 font-mono text-blue-600">SELECT SUM(x) FROM [t]</td>
+                                    <td class="px-6 py-4 text-gray-500 text-xs">COUNT, SUM, AVG</td>
+                                </tr>
+                                <tr class="bg-white hover:bg-gray-50">
+                                    <td class="px-6 py-4 font-medium">Index</td>
+                                    <td class="px-6 py-4 font-mono text-green-600">INDEKS [t] PADA [f]</td>
+                                    <td class="px-6 py-4 font-mono text-blue-600">CREATE INDEX ON [t] ([f])</td>
+                                    <td class="px-6 py-4 text-gray-500 text-xs">B-Tree Indexing</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </section>
 
-            <!-- Network Edition -->
+            <!-- Network -->
             <section id="network" class="mb-16 scroll-mt-24">
                 <div class="flex items-center justify-between mb-8">
                     <h2 class="text-3xl font-bold text-gray-800 flex items-center">
-                        Network Edition
+                        Network
                     </h2>
                     <span
                         class="bg-red-100 text-red-600 px-3 py-1 rounded-full text-sm font-bold border border-red-200">v2.0

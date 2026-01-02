@@ -12,9 +12,9 @@ class SawitDB {
         this.parser = new QueryParser();
     }
 
-    query(queryString) {
+    query(queryString, params) {
         // Parse the query into a command object
-        const cmd = this.parser.parse(queryString);
+        const cmd = this.parser.parse(queryString, params);
 
         if (cmd.type === 'EMPTY') return "";
         if (cmd.type === 'ERROR') return `Error: ${cmd.message}`;

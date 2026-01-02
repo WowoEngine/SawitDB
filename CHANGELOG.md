@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v2.4] - 2026-01-02
+
+### Security
+- **Parameterized Queries**: Implemented full support for parameterized queries to prevent AQL injection (Reported by @nastarkejuu).
+    - Updated `SawitClient` to send parameters.
+    - Updated `SawitServer` and `WowoEngine` to bind parameters safely.
+    - Updated `QueryParser` to handle `@param` placeholders.
+
+### Documentation
+- **Enhanced Docs**: Updated `docs/index.html` to match README feature set.
+    - Added Benchmark results.
+    - Added Dual Syntax (AQL vs SQL) comparison table.
+    - Added complete Operators table.
+- **Package Fixes**: Corrected invalid paths in `package.json` for `main`, `scripts`, and `bin`.
+
+---
+
 ## [v2.3] - 2024-12-31
 
 ### 🚀 New Features

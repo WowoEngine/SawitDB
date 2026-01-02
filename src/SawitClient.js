@@ -116,7 +116,7 @@ class SawitClient {
         });
     }
 
-    async query(queryString) {
+    async query(queryString, params = []) {
         if (!this.connected) {
             throw new Error('Not connected to server');
         }
@@ -124,7 +124,10 @@ class SawitClient {
         return new Promise((resolve, reject) => {
             this._sendRequest({
                 type: 'query',
-                payload: { query: queryString }
+                payload: {
+                    query: queryString,
+                    params: params
+                }
             }, (response) => {
                 if (response.type === 'query_result') {
                     resolve(response.result);
@@ -211,7 +214,7 @@ class SawitClient {
     _sendRequest(request, callback) {
         const id = ++this.requestId;
         this.pendingRequests.push({ id, handler: callback });
-        
+
         try {
             this.socket.write(JSON.stringify(request) + '\n');
         } catch (err) {

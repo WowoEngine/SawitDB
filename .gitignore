@@ -4,10 +4,10 @@
 # Database Files
 *.sawit
 data/
-*.db
-*.sqlite
+
 
 # Test/Development Files
+tests/
 test_*.js
 test_*.sawit
 example.sawit

@@ -8,7 +8,7 @@ class QueryParser {
 
     tokenize(sql) {
         // Regex to match tokens
-        const tokenRegex = /\s*(=>|!=|>=|<=|<>|[(),=*.<>]|[a-zA-Z_]\w*|\d+|'[^']*'|"[^"]*")\s*/g;
+        const tokenRegex = /\s*(=>|!=|>=|<=|<>|[(),=*.<>?]|[a-zA-Z_]\w*|@\w+|\d+|'[^']*'|"[^"]*")\s*/g;
         const tokens = [];
         let match;
         while ((match = tokenRegex.exec(sql)) !== null) {
@@ -17,11 +17,12 @@ class QueryParser {
         return tokens;
     }
 
-    parse(queryString) {
+    parse(queryString, params) {
         const tokens = this.tokenize(queryString);
         if (tokens.length === 0) return { type: 'EMPTY' };
 
         const cmd = tokens[0].toUpperCase();
+        let command;
 
         try {
             switch (cmd) {
@@ -54,6 +55,11 @@ class QueryParser {
                 default:
                     throw new Error(`Perintah tidak dikenal: ${cmd}`);
             }
+
+            if (params) {
+                this._bindParameters(command, params);
+            }
+            return command;
         } catch (e) {
             return { type: 'ERROR', message: e.message };
         }
@@ -493,6 +499,58 @@ class QueryParser {
         }
 
         return { type: 'AGGREGATE', table, func: aggFunc, field: aggField, criteria, groupBy: groupField };
+    }
+    _bindParameters(command, params) {
+        if (!command) return;
+
+        // Helper to bind a value
+        const bindValue = (val) => {
+            if (typeof val === 'string' && val.startsWith('@')) {
+                // Named parameter
+                const paramName = val.substring(1); // remove @
+                if (params && params.hasOwnProperty(paramName)) {
+                    return params[paramName];
+                } else if (Array.isArray(params)) {
+                    // Fallback for array if user matched index? Unlikely for named.
+                    return val;
+                }
+            }
+            return val;
+        };
+
+        // 1. Bind Criteria (SELECT, DELETE, UPDATE, AGGREGATE)
+        if (command.criteria) {
+            this._info_bindCriteria(command.criteria, bindValue);
+        }
+
+        // 2. Bind Data (INSERT)
+        if (command.data) {
+            for (const key in command.data) {
+                command.data[key] = bindValue(command.data[key]);
+            }
+        }
+
+        // 3. Bind Update values (UPDATE)
+        if (command.updates) {
+            for (const key in command.updates) {
+                command.updates[key] = bindValue(command.updates[key]);
+            }
+        }
+    }
+
+    _info_bindCriteria(criteria, bindFunc) {
+        if (criteria.type === 'compound') {
+            for (const cond of criteria.conditions) {
+                this._info_bindCriteria(cond, bindFunc);
+            }
+        } else {
+            // Single condition
+            if (Array.isArray(criteria.val)) {
+                criteria.val = criteria.val.map(v => bindFunc(v));
+            } else {
+                criteria.val = bindFunc(criteria.val);
+            }
+        }
     }
 }
 

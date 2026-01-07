@@ -227,7 +227,7 @@
             </nav>
 
             <div class="p-6 border-t border-white/5">
-                <p class="text-xs text-gray-500">&copy; 2025 SawitDB Core Team</p>
+                <p class="text-xs text-gray-500">&copy; 2026 SawitDB Core Team</p>
             </div>
         </aside>
 
@@ -709,6 +709,36 @@
                                     <td class="px-6 py-4 font-mono text-gray-300">LIMIT 10 OFFSET 5</td>
                                     <td class="px-6 py-4 text-gray-400">Restrict and skip rows</td>
                                 </tr>
+                                <tr class="hover:bg-white/5 transition-colors">
+                                    <td class="px-6 py-4 font-medium text-white">DISTINCT</td>
+                                    <td class="px-6 py-4 font-mono text-gray-300">SELECT DISTINCT col</td>
+                                    <td class="px-6 py-4 text-gray-400">Remove duplicate rows</td>
+                                </tr>
+                                <tr class="hover:bg-white/5 transition-colors">
+                                    <td class="px-6 py-4 font-medium text-white">LEFT JOIN</td>
+                                    <td class="px-6 py-4 font-mono text-gray-300">LEFT JOIN ... ON ...</td>
+                                    <td class="px-6 py-4 text-gray-400">Include unmatched left rows</td>
+                                </tr>
+                                <tr class="hover:bg-white/5 transition-colors">
+                                    <td class="px-6 py-4 font-medium text-white">RIGHT JOIN</td>
+                                    <td class="px-6 py-4 font-mono text-gray-300">RIGHT JOIN ... ON ...</td>
+                                    <td class="px-6 py-4 text-gray-400">Include unmatched right rows</td>
+                                </tr>
+                                <tr class="hover:bg-white/5 transition-colors">
+                                    <td class="px-6 py-4 font-medium text-white">CROSS JOIN</td>
+                                    <td class="px-6 py-4 font-mono text-gray-300">CROSS JOIN table</td>
+                                    <td class="px-6 py-4 text-gray-400">Cartesian product</td>
+                                </tr>
+                                <tr class="hover:bg-white/5 transition-colors">
+                                    <td class="px-6 py-4 font-medium text-white">HAVING</td>
+                                    <td class="px-6 py-4 font-mono text-gray-300">GROUP BY x HAVING count &gt; 5</td>
+                                    <td class="px-6 py-4 text-gray-400">Filter after aggregation</td>
+                                </tr>
+                                <tr class="hover:bg-white/5 transition-colors">
+                                    <td class="px-6 py-4 font-medium text-white">EXPLAIN</td>
+                                    <td class="px-6 py-4 font-mono text-gray-300">EXPLAIN SELECT ...</td>
+                                    <td class="px-6 py-4 text-gray-400">Show query execution plan</td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -753,6 +783,48 @@
                                     <td class="px-6 py-4 font-mono text-green-400">INDEKS [t] PADA [f]</td>
                                     <td class="px-6 py-4 font-mono text-blue-400">CREATE INDEX ON [t] ([f])</td>
                                     <td class="px-6 py-4 text-gray-500 text-xs">B-Tree Indexing</td>
+                                </tr>
+                                <tr class="hover:bg-white/5 transition-colors">
+                                    <td class="px-6 py-4 font-medium text-white">MIN/MAX</td>
+                                    <td class="px-6 py-4 font-mono text-green-400">HITUNG MIN(x) DARI [t]</td>
+                                    <td class="px-6 py-4 font-mono text-blue-400">SELECT MIN(x) FROM [t]</td>
+                                    <td class="px-6 py-4 text-gray-500 text-xs">Aggregation</td>
+                                </tr>
+                                <tr class="hover:bg-white/5 transition-colors">
+                                    <td class="px-6 py-4 font-medium text-white">DISTINCT</td>
+                                    <td class="px-6 py-4 font-mono text-green-400">PANEN UNIK x DARI [t]</td>
+                                    <td class="px-6 py-4 font-mono text-blue-400">SELECT DISTINCT x FROM [t]</td>
+                                    <td class="px-6 py-4 text-gray-500 text-xs">Unique rows</td>
+                                </tr>
+                                <tr class="hover:bg-white/5 transition-colors">
+                                    <td class="px-6 py-4 font-medium text-white">LEFT JOIN</td>
+                                    <td class="px-6 py-4 font-mono text-green-400">GABUNG KIRI</td>
+                                    <td class="px-6 py-4 font-mono text-blue-400">LEFT JOIN ... ON ...</td>
+                                    <td class="px-6 py-4 text-gray-500 text-xs">Outer join</td>
+                                </tr>
+                                <tr class="hover:bg-white/5 transition-colors">
+                                    <td class="px-6 py-4 font-medium text-white">RIGHT JOIN</td>
+                                    <td class="px-6 py-4 font-mono text-green-400">GABUNG KANAN</td>
+                                    <td class="px-6 py-4 font-mono text-blue-400">RIGHT JOIN ... ON ...</td>
+                                    <td class="px-6 py-4 text-gray-500 text-xs">Outer join</td>
+                                </tr>
+                                <tr class="hover:bg-white/5 transition-colors">
+                                    <td class="px-6 py-4 font-medium text-white">CROSS JOIN</td>
+                                    <td class="px-6 py-4 font-mono text-green-400">GABUNG SILANG</td>
+                                    <td class="px-6 py-4 font-mono text-blue-400">CROSS JOIN</td>
+                                    <td class="px-6 py-4 text-gray-500 text-xs">Cartesian product</td>
+                                </tr>
+                                <tr class="hover:bg-white/5 transition-colors">
+                                    <td class="px-6 py-4 font-medium text-white">HAVING</td>
+                                    <td class="px-6 py-4 font-mono text-green-400">PUNYA count > 5</td>
+                                    <td class="px-6 py-4 font-mono text-blue-400">HAVING count > 5</td>
+                                    <td class="px-6 py-4 text-gray-500 text-xs">Filter groups</td>
+                                </tr>
+                                <tr class="hover:bg-white/5 transition-colors">
+                                    <td class="px-6 py-4 font-medium text-white">EXPLAIN</td>
+                                    <td class="px-6 py-4 font-mono text-green-400">JELASKAN SELECT ...</td>
+                                    <td class="px-6 py-4 font-mono text-blue-400">EXPLAIN SELECT ...</td>
+                                    <td class="px-6 py-4 text-gray-500 text-xs">Query plan</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -858,8 +930,8 @@
                                     <span class="font-bold text-blue-400">Unit Tests</span>
                                     <code class="text-xs bg-white/10 px-1 rounded">cli/test.js</code>
                                 </div>
-                                <p class="text-xs text-gray-400">Run 10+ automated test suites covering CRUD,
-                                    Persistence, and Indexing.</p>
+                                <p class="text-xs text-gray-400">Run 17+ automated test suites covering CRUD,
+                                    JOINs, DISTINCT, HAVING, EXPLAIN, and more.</p>
                             </li>
                             <li class="bg-black/30 p-3 rounded-lg border border-white/5">
                                 <div class="flex justify-between items-center mb-1">
@@ -878,26 +950,42 @@
             <section id="changelog" class="mb-16 scroll-mt-24">
                 <h2 class="text-3xl font-bold text-white mb-8 border-b border-white/10 pb-4">Latest Updates</h2>
                 <div class="space-y-6">
-                    <!-- v2.4.1 -->
+                    <!-- v2.6.0 -->
                     <div class="relative pl-8 border-l-2 border-green-500/30">
                         <div
                             class="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-green-500 border-4 border-gray-900">
                         </div>
                         <div class="flex items-center gap-3 mb-2">
-                            <h3 class="text-xl font-bold text-white">v2.5.0</h3>
+                            <h3 class="text-xl font-bold text-white">v2.6.0</h3>
                             <span
                                 class="px-2 py-0.5 rounded text-xs bg-green-500/20 text-green-400 border border-green-500/20">Latest</span>
                             <span class="text-sm text-gray-400">Jan 2026</span>
                         </div>
                         <ul class="list-disc list-outside text-gray-300 text-sm space-y-1 ml-4">
-                            <li><strong>Performance :</strong> Object Caching & Async WAL achieved
-                                <strong>~247,000 TPS</strong> for reads.
-                            </li>
-                            <li><strong>Hash Join Implementation:</strong> Complex joins are now <strong>77x
-                                    Faster</strong> (O(M+N)).</li>
+                            <li><strong>JOIN Types:</strong> Added LEFT, RIGHT, FULL OUTER, and CROSS JOIN support.</li>
+                            <li><strong>DISTINCT:</strong> Remove duplicate rows with <code class="text-green-400">SELECT DISTINCT</code>.</li>
+                            <li><strong>HAVING:</strong> Filter grouped results after aggregation.</li>
+                            <li><strong>EXPLAIN:</strong> Analyze query execution plan before running.</li>
+                            <li><strong>Security:</strong> Password hashing (SHA-256), timing-safe auth, input validation.</li>
+                            <li><strong>Performance:</strong> B-Tree binary search, true LRU cache, optimized aggregates.</li>
+                            <li><strong>Bug Fixes:</strong> Fixed _deleteFullScan(), duplicate code, division by zero in AVG.</li>
+                        </ul>
+                    </div>
+
+                    <!-- v2.5.0 -->
+                    <div class="relative pl-8 border-l-2 border-white/10">
+                        <div
+                            class="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-gray-700 border-4 border-gray-900">
+                        </div>
+                        <div class="flex items-center gap-3 mb-2">
+                            <h3 class="text-xl font-bold text-gray-400">v2.5.0</h3>
+                            <span class="text-sm text-gray-500">Jan 2026</span>
+                        </div>
+                        <ul class="list-disc list-outside text-gray-400 text-sm space-y-1 ml-4">
+                            <li><strong>Performance:</strong> Object Caching & Async WAL achieved ~247,000 TPS for reads.</li>
+                            <li><strong>Hash Join:</strong> Complex joins are now 77x Faster (O(M+N)).</li>
                             <li><strong>New Tools:</strong> Added CLI Unit Tests and Benchmarking Tool.</li>
-                            <li><strong>Persistence Fix:</strong> Fixed Index loss on restart and Windows file locking
-                                issues.</li>
+                            <li><strong>Persistence Fix:</strong> Fixed Index loss on restart.</li>
                         </ul>
                     </div>
 
@@ -937,7 +1025,7 @@
             <footer class="mt-24 py-8 border-t border-white/5">
                 <div class="flex flex-col md:flex-row justify-between items-center text-gray-500 text-sm">
                     <div class="mb-4 md:mb-0">
-                        &copy; 2025 SawitDB Core Team.
+                        &copy; 2026 SawitDB Core Team.
                     </div>
                     <div class="flex space-x-6 items-center">
                         <span class="text-xs">Support Us:</span>

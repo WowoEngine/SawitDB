@@ -181,8 +181,35 @@ CREATE INDEX ON [table] ([field])
 ```sql
 HITUNG COUNT(*) DARI [table]
 HITUNG AVG(price) DARI [products] KELOMPOK [category]
--- Generic Keyword Alias
-SELECT AVG(price) FROM [products] GROUP BY [category] (Coming Soon)
+-- With HAVING clause
+HITUNG COUNT(*) DARI sales GROUP BY region HAVING count > 5
+```
+
+#### DISTINCT
+```sql
+SELECT DISTINCT category FROM products
+-- Returns only unique values
+```
+
+#### JOIN Types
+```sql
+-- INNER JOIN (default)
+SELECT * FROM orders JOIN customers ON orders.customer_id = customers.id
+
+-- LEFT OUTER JOIN
+SELECT * FROM employees LEFT JOIN departments ON employees.dept_id = departments.id
+
+-- RIGHT OUTER JOIN
+SELECT * FROM employees RIGHT JOIN departments ON employees.dept_id = departments.id
+
+-- CROSS JOIN (Cartesian product)
+SELECT * FROM colors CROSS JOIN sizes
+```
+
+#### EXPLAIN Query Plan
+```sql
+EXPLAIN SELECT * FROM users WHERE id = 5
+-- Returns execution plan: scan type, index usage, join methods
 ```
 
 ## Architecture Details
@@ -223,6 +250,13 @@ Test Environment: Single Thread, Windows Node.js (Local NVMe)
 | **Count** | `HITUNG COUNT(*) DARI [table]` | `SELECT COUNT(*) FROM [table]` (via HITUNG) | Aggregation |
 | **Sum** | `HITUNG SUM(col) DARI [table]` | `SELECT SUM(col) FROM [table]` (via HITUNG) | Aggregation |
 | **Average** | `HITUNG AVG(col) DARI [table]` | `SELECT AVG(col) FROM [table]` (via HITUNG) | Aggregation |
+| **Min/Max** | `HITUNG MIN(col) DARI [table]` | `SELECT MIN(col) FROM [table]` (via HITUNG) | Aggregation |
+| **DISTINCT** | `PANEN UNIK col DARI [table]` | `SELECT DISTINCT col FROM [table]` | Unique rows |
+| **LEFT JOIN** | `GABUNG KIRI` | `LEFT JOIN ... ON ...` | Outer join |
+| **RIGHT JOIN** | `GABUNG KANAN` | `RIGHT JOIN ... ON ...` | Outer join |
+| **CROSS JOIN** | `GABUNG SILANG` | `CROSS JOIN` | Cartesian product |
+| **HAVING** | `PUNYA count > 5` | `HAVING count > 5` | Filter groups |
+| **EXPLAIN** | `JELASKAN SELECT ...` | `EXPLAIN SELECT ...` | Query plan |
 
 ### Supported Operators Table
 
@@ -236,6 +270,7 @@ Test Environment: Single Thread, Windows Node.js (Local NVMe)
 | **Range** | `BETWEEN 1000 AND 5000` | Inclusive range check |
 | **Null** | `IS NULL` | Check if field is empty/null |
 | **Not Null** | `IS NOT NULL` | Check if field has value |
+| **Distinct** | `SELECT DISTINCT col` | Remove duplicate rows |
 | **Limit** | `LIMIT 10` | Restrict number of rows |
 | **Offset** | `OFFSET 5` | Skip first N rows (Pagination) |
 | **Order** | `ORDER BY price DESC` | Sort by field (ASC/DESC) |

@@ -20,6 +20,46 @@ class BTreeIndex {
     }
 
     /**
+     * Binary search to find insertion point
+     * Returns the index where key should be inserted
+     */
+    _binarySearchInsertPoint(keys, key) {
+        let left = 0;
+        let right = keys.length;
+
+        while (left < right) {
+            const mid = (left + right) >>> 1;
+            if (keys[mid] < key) {
+                left = mid + 1;
+            } else {
+                right = mid;
+            }
+        }
+        return left;
+    }
+
+    /**
+     * Binary search to find exact key or insertion point
+     * Returns { found: boolean, index: number }
+     */
+    _binarySearch(keys, key) {
+        let left = 0;
+        let right = keys.length - 1;
+
+        while (left <= right) {
+            const mid = (left + right) >>> 1;
+            if (keys[mid] === key) {
+                return { found: true, index: mid };
+            } else if (keys[mid] < key) {
+                left = mid + 1;
+            } else {
+                right = mid - 1;
+            }
+        }
+        return { found: false, index: left };
+    }
+
+    /**
      * Insert a key-value pair into the index
      * @param {*} key - The key to index
      * @param {*} value - The value to store (usually record reference/data)
@@ -39,25 +79,19 @@ class BTreeIndex {
     }
 
     _insertNonFull(node, key, value) {
-        let i = node.keys.length - 1;
-
         if (node.isLeaf) {
-            // OPTIMIZATION: Use splice for cleaner insertion (though push/shift might be faster, splice is clearer)
-            // Binary search for insertion point could be faster for large nodes, but order=32 is small.
-            while (i >= 0 && key < node.keys[i]) {
-                node.keys[i + 1] = node.keys[i];
-                node.values[i + 1] = node.values[i];
-                i--;
-            }
-
-            node.keys[i + 1] = key;
-            node.values[i + 1] = value;
+            // OPTIMIZATION: Use binary search to find insertion point
+            const insertIdx = this._binarySearchInsertPoint(node.keys, key);
+            // Use splice for O(n) insertion (still O(n) due to array shift, but search is O(log n))
+            node.keys.splice(insertIdx, 0, key);
+            node.values.splice(insertIdx, 0, value);
         } else {
-            // Find child to insert into
-            while (i >= 0 && key < node.keys[i]) {
-                i--;
-            }
-            i++;
+            // Find child to insert into using binary search
+            let i = this._binarySearchInsertPoint(node.keys, key);
+            // Adjust: if key >= keys[i], we go to child[i+1], but _binarySearchInsertPoint
+            // returns where key would be inserted, so child index is the same
+            // Actually for internal node navigation: go to child[i] where i is the index
+            // such that keys[i-1] < key <= keys[i]
 
             // OPTIMIZATION & BUGFIX: handled undefined child proactively
             if (!node.children[i]) {
@@ -141,15 +175,11 @@ class BTreeIndex {
             return [];
         }
 
-        let i = 0;
-
-        // Find the first key greater than or equal to the search key
-        while (i < node.keys.length && key > node.keys[i]) {
-            i++;
-        }
+        // OPTIMIZATION: Use binary search instead of linear scan
+        const { found, index: i } = this._binarySearch(node.keys, key);
 
         // Check if key is found
-        if (i < node.keys.length && key === node.keys[i]) {
+        if (found) {
             if (node.isLeaf) {
                 return Array.isArray(node.values[i]) ? node.values[i] : [node.values[i]];
             } else {

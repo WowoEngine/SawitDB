@@ -140,9 +140,9 @@ class Pager {
 
         if (this.cache.has(pageId)) {
             const buf = this.cache.get(pageId);
-            // Move to end (LRU) - optimized: only do it occasionally or use specialized LRU if needed
-            // For raw speed, Map order insertion is enough, but delete/set is costly in hot path
-            // Keeping it simple for now
+            // True LRU: Move to end by delete+set (marks as recently used)
+            this.cache.delete(pageId);
+            this.cache.set(pageId, buf);
             return buf;
         }
 
@@ -151,12 +151,16 @@ class Pager {
         try {
             fs.readSync(this.fd, buf, 0, PAGE_SIZE, offset);
         } catch (e) {
-            if (e.code !== 'EOF') throw e;
+            // Return buffer to pool on error
+            if (e.code !== 'EOF') {
+                this._releaseBuffer(buf);
+                throw e;
+            }
         }
 
         this.cache.set(pageId, buf);
-        // Simple eviction
-        if (this.cache.size > this.cacheLimit) {
+        // LRU eviction - evict oldest (first) entries
+        while (this.cache.size > this.cacheLimit) {
             const firstKey = this.cache.keys().next().value;
             // Don't evict dirty pages without flushing!
             if (this.dirtyPages.has(firstKey)) {
@@ -164,6 +168,8 @@ class Pager {
             }
             const oldBuf = this.cache.get(firstKey);
             this.cache.delete(firstKey);
+            // Also clean up object cache for this page
+            this.objectCache.delete(firstKey);
             this._releaseBuffer(oldBuf);
         }
 
@@ -268,9 +274,6 @@ class Pager {
     }
 }
 
-Pager.PAGE_SIZE = PAGE_SIZE;
-
-module.exports = Pager;
 Pager.PAGE_SIZE = PAGE_SIZE;
 
 module.exports = Pager;

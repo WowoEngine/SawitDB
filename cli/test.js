@@ -150,6 +150,90 @@ async function runTests() {
         } else throw new Error("Index usage failed");
 
 
+
+        // 5.1 DISTINCT
+        const distinctRes = db.query(`SELECT DISTINCT lokasi FROM ${TEST_TABLE}`);
+        // We have: Blok A (id 1,2), Blok B (id 3,5) - id 4 was deleted
+        // Unique locations: Blok A, Blok B
+        if (distinctRes.length === 2) {
+            passed++; logPass("DISTINCT keyword");
+        } else throw new Error(`DISTINCT failed, expected 2 unique, got ${distinctRes.length}`);
+
+        // 5.2 LEFT JOIN
+        // Create a table with unmatched rows
+        db.query(`CREATE TABLE departments`);
+        db.query(`INSERT INTO departments (id, name) VALUES (1, 'Engineering')`);
+        db.query(`INSERT INTO departments (id, name) VALUES (2, 'Sales')`);
+        db.query(`INSERT INTO departments (id, name) VALUES (3, 'HR')`); // No employees
+
+        db.query(`CREATE TABLE employees`);
+        db.query(`INSERT INTO employees (id, name, dept_id) VALUES (1, 'Alice', 1)`);
+        db.query(`INSERT INTO employees (id, name, dept_id) VALUES (2, 'Bob', 2)`);
+        db.query(`INSERT INTO employees (id, name, dept_id) VALUES (3, 'Charlie', 999)`); // No dept
+
+        const leftJoinRes = db.query(`SELECT * FROM employees LEFT JOIN departments ON employees.dept_id = departments.id`);
+        // Should return 3 rows: Alice+Eng, Bob+Sales, Charlie+NULL
+        const charlieRow = leftJoinRes.find(r => r['employees.name'] === 'Charlie' || r.name === 'Charlie');
+        if (leftJoinRes.length === 3 && charlieRow && charlieRow['departments.name'] === null) {
+            passed++; logPass("LEFT JOIN (includes unmatched left rows)");
+        } else throw new Error(`LEFT JOIN failed, got ${leftJoinRes.length} rows`);
+
+        // 5.3 RIGHT JOIN
+        const rightJoinRes = db.query(`SELECT * FROM employees RIGHT JOIN departments ON employees.dept_id = departments.id`);
+        // Should return 3 rows: Alice+Eng, Bob+Sales, NULL+HR
+        const hrRow = rightJoinRes.find(r => r['departments.name'] === 'HR');
+        if (rightJoinRes.length === 3 && hrRow && hrRow['employees.name'] === null) {
+            passed++; logPass("RIGHT JOIN (includes unmatched right rows)");
+        } else throw new Error(`RIGHT JOIN failed, got ${rightJoinRes.length} rows`);
+
+        // 5.4 CROSS JOIN
+        db.query(`CREATE TABLE colors`);
+        db.query(`INSERT INTO colors (name) VALUES ('Red')`);
+        db.query(`INSERT INTO colors (name) VALUES ('Blue')`);
+
+        db.query(`CREATE TABLE sizes`);
+        db.query(`INSERT INTO sizes (size) VALUES ('S')`);
+        db.query(`INSERT INTO sizes (size) VALUES ('M')`);
+        db.query(`INSERT INTO sizes (size) VALUES ('L')`);
+
+        const crossJoinRes = db.query(`SELECT * FROM colors CROSS JOIN sizes`);
+        // Cartesian product: 2 colors * 3 sizes = 6 rows
+        if (crossJoinRes.length === 6) {
+            passed++; logPass("CROSS JOIN (Cartesian product)");
+        } else throw new Error(`CROSS JOIN failed, expected 6, got ${crossJoinRes.length}`);
+
+        // 5.5 HAVING clause
+        db.query(`CREATE TABLE sales`);
+        db.query(`INSERT INTO sales (region, amount) VALUES ('North', 100)`);
+        db.query(`INSERT INTO sales (region, amount) VALUES ('North', 200)`);
+        db.query(`INSERT INTO sales (region, amount) VALUES ('South', 50)`);
+        db.query(`INSERT INTO sales (region, amount) VALUES ('East', 500)`);
+
+        const havingRes = db.query(`HITUNG COUNT(*) DARI sales GROUP BY region HAVING count > 1`);
+        // Only North has count > 1 (2 records)
+        if (havingRes.length === 1 && havingRes[0].region === 'North' && havingRes[0].count === 2) {
+            passed++; logPass("HAVING clause (filter grouped results)");
+        } else throw new Error(`HAVING failed, got ${JSON.stringify(havingRes)}`);
+
+        // 5.6 EXPLAIN query plan
+        const explainRes = db.query(`EXPLAIN SELECT * FROM ${TEST_TABLE} WHERE produksi = 999`);
+        if (explainRes && explainRes.type === 'SELECT' && explainRes.steps && explainRes.steps.length > 0) {
+            const hasIndexScan = explainRes.steps.some(s => s.operation === 'INDEX SCAN');
+            if (hasIndexScan) {
+                passed++; logPass("EXPLAIN (shows INDEX SCAN for indexed query)");
+            } else {
+                passed++; logPass("EXPLAIN (returns query plan)");
+            }
+        } else throw new Error(`EXPLAIN failed, got ${JSON.stringify(explainRes)}`);
+
+        // 5.7 MIN/MAX aggregates
+        const minRes = db.query(`HITUNG MIN(amount) DARI sales`);
+        const maxRes = db.query(`HITUNG MAX(amount) DARI sales`);
+        if (minRes.min === 50 && maxRes.max === 500) {
+            passed++; logPass("MIN/MAX aggregate functions");
+        } else throw new Error(`MIN/MAX failed: min=${minRes.min}, max=${maxRes.max}`);
+
+
     } catch (e) {
         failed++;
         logFail("Critical Test Error", e);

@@ -66,6 +66,10 @@ class QueryParser {
                 case 'HITUNG':
                     command = this.parseAggregate(tokens);
                     break;
+                case 'EXPLAIN':
+                case 'JELASKAN':
+                    command = this.parseExplain(tokens);
+                    break;
                 default:
                     throw new Error(`Perintah tidak dikenal: ${cmd}`);
             }
@@ -184,6 +188,14 @@ class QueryParser {
 
     parseSelect(tokens) {
         let i = 1;
+
+        // Check for DISTINCT keyword
+        let distinct = false;
+        if (tokens[i] && tokens[i].toUpperCase() === 'DISTINCT') {
+            distinct = true;
+            i++;
+        }
+
         const cols = [];
         while (i < tokens.length && !['DARI', 'FROM'].includes(tokens[i].toUpperCase())) {
             if (tokens[i] !== ',') cols.push(tokens[i]);
@@ -196,14 +208,72 @@ class QueryParser {
         const table = tokens[i];
         i++;
 
+        // Parse JOINs - supports: JOIN, LEFT JOIN, RIGHT JOIN, CROSS JOIN, INNER JOIN
+        // Also AQL: GABUNG, GABUNG KIRI, GABUNG KANAN, GABUNG SILANG
         const joins = [];
-        while (i < tokens.length && ['JOIN', 'GABUNG'].includes(tokens[i].toUpperCase())) {
-            i++; // Skip JOIN/GABUNG
+        while (i < tokens.length) {
+            const token = tokens[i].toUpperCase();
+
+            // Detect join type
+            let joinType = null;
+
+            if (token === 'JOIN' || token === 'GABUNG') {
+                joinType = 'INNER';
+                i++;
+            } else if (token === 'INNER') {
+                i++;
+                if (tokens[i] && ['JOIN', 'GABUNG'].includes(tokens[i].toUpperCase())) {
+                    joinType = 'INNER';
+                    i++;
+                }
+            } else if (token === 'LEFT' || token === 'KIRI') {
+                i++;
+                // Skip optional OUTER keyword
+                if (tokens[i] && tokens[i].toUpperCase() === 'OUTER') i++;
+                if (tokens[i] && ['JOIN', 'GABUNG'].includes(tokens[i].toUpperCase())) {
+                    joinType = 'LEFT';
+                    i++;
+                }
+            } else if (token === 'RIGHT' || token === 'KANAN') {
+                i++;
+                // Skip optional OUTER keyword
+                if (tokens[i] && tokens[i].toUpperCase() === 'OUTER') i++;
+                if (tokens[i] && ['JOIN', 'GABUNG'].includes(tokens[i].toUpperCase())) {
+                    joinType = 'RIGHT';
+                    i++;
+                }
+            } else if (token === 'FULL') {
+                i++;
+                // Skip optional OUTER keyword
+                if (tokens[i] && tokens[i].toUpperCase() === 'OUTER') i++;
+                if (tokens[i] && ['JOIN', 'GABUNG'].includes(tokens[i].toUpperCase())) {
+                    joinType = 'FULL';
+                    i++;
+                }
+            } else if (token === 'CROSS' || token === 'SILANG') {
+                i++;
+                if (tokens[i] && ['JOIN', 'GABUNG'].includes(tokens[i].toUpperCase())) {
+                    joinType = 'CROSS';
+                    i++;
+                }
+            } else {
+                // No more joins
+                break;
+            }
+
+            if (!joinType) break;
+
             const joinTable = tokens[i];
             i++;
 
+            // CROSS JOIN doesn't require ON clause
+            if (joinType === 'CROSS') {
+                joins.push({ table: joinTable, type: joinType, on: null });
+                continue;
+            }
+
             if (i >= tokens.length || !['ON', 'PADA'].includes(tokens[i].toUpperCase())) {
-                throw new Error("Syntax: JOIN [table] ON [condition]");
+                throw new Error(`Syntax: ${joinType} JOIN [table] ON [condition]`);
             }
             i++; // Skip ON/PADA
 
@@ -215,7 +285,7 @@ class QueryParser {
             const right = tokens[i];
             i++;
 
-            joins.push({ table: joinTable, on: { left, op, right } });
+            joins.push({ table: joinTable, type: joinType, on: { left, op, right } });
         }
 
         let criteria = null;
@@ -251,17 +321,17 @@ class QueryParser {
 
         if (i < tokens.length && tokens[i].toUpperCase() === 'LIMIT') {
             i++;
-            limit = parseInt(tokens[i]);
+            limit = parseInt(tokens[i], 10);
             i++;
         }
 
         if (i < tokens.length && tokens[i].toUpperCase() === 'OFFSET') {
             i++;
-            offset = parseInt(tokens[i]);
+            offset = parseInt(tokens[i], 10);
             i++;
         }
 
-        return { type: 'SELECT', table, cols, joins, criteria, sort, limit, offset };
+        return { type: 'SELECT', table, cols, joins, criteria, sort, limit, offset, distinct };
     }
 
     parseWhere(tokens, startIndex) {
@@ -551,9 +621,29 @@ class QueryParser {
                 i++; // KELOMPOK
             }
             groupField = tokens[i];
+            i++;
         }
 
-        return { type: 'AGGREGATE', table, func: aggFunc, field: aggField, criteria, groupBy: groupField };
+        // HAVING clause - filter after grouping
+        // Syntax: HAVING aggregate_result op value (e.g., HAVING count > 5)
+        let having = null;
+        if (i < tokens.length && ['HAVING', 'PUNYA'].includes(tokens[i].toUpperCase())) {
+            i++;
+            // Parse HAVING condition: field op value
+            // Supports: count, sum, avg, min, max (aggregate result fields)
+            const havingField = tokens[i];
+            i++;
+            const havingOp = tokens[i];
+            i++;
+            let havingVal = tokens[i];
+            // Try to parse as number
+            if (!isNaN(Number(havingVal))) {
+                havingVal = Number(havingVal);
+            }
+            having = { field: havingField, op: havingOp, val: havingVal };
+        }
+
+        return { type: 'AGGREGATE', table, func: aggFunc, field: aggField, criteria, groupBy: groupField, having };
     }
     _bindParameters(command, params) {
         if (!command) return;
@@ -606,6 +696,44 @@ class QueryParser {
                 criteria.val = bindFunc(criteria.val);
             }
         }
+    }
+
+    /**
+     * Parse EXPLAIN query
+     * Syntax: EXPLAIN SELECT ... | EXPLAIN DELETE ... | etc.
+     * Returns the inner command wrapped with type: 'EXPLAIN'
+     */
+    parseExplain(tokens) {
+        // Skip EXPLAIN/JELASKAN keyword
+        const innerTokens = tokens.slice(1);
+        if (innerTokens.length === 0) {
+            throw new Error("EXPLAIN requires a query to analyze");
+        }
+
+        const innerCmd = innerTokens[0].toUpperCase();
+        let innerCommand;
+
+        switch (innerCmd) {
+            case 'PANEN':
+            case 'SELECT':
+                innerCommand = this.parseSelect(innerTokens);
+                break;
+            case 'GUSUR':
+            case 'DELETE':
+                innerCommand = this.parseDelete(innerTokens);
+                break;
+            case 'PUPUK':
+            case 'UPDATE':
+                innerCommand = this.parseUpdate(innerTokens);
+                break;
+            case 'HITUNG':
+                innerCommand = this.parseAggregate(innerTokens);
+                break;
+            default:
+                throw new Error(`EXPLAIN not supported for: ${innerCmd}`);
+        }
+
+        return { type: 'EXPLAIN', innerCommand };
     }
 }
 

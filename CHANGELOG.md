@@ -2,6 +2,77 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v2.6.0] - 2026-01-07
+
+###  More SQL Features
+
+#### JOIN Enhancements
+- **LEFT OUTER JOIN**: Returns all rows from left table, NULL for unmatched right rows
+- **RIGHT OUTER JOIN**: Returns all rows from right table, NULL for unmatched left rows
+- **FULL OUTER JOIN**: Returns all rows from both tables with NULL for non-matches
+- **CROSS JOIN**: Cartesian product (no ON clause required)
+- AQL equivalents: `GABUNG KIRI`, `GABUNG KANAN`, `GABUNG SILANG`
+
+```sql
+-- LEFT JOIN example
+SELECT * FROM employees LEFT JOIN departments ON employees.dept_id = departments.id
+
+-- CROSS JOIN example
+SELECT * FROM colors CROSS JOIN sizes
+```
+
+#### DISTINCT Keyword
+- Remove duplicate rows from query results
+- Applied after column projection for correct behavior
+
+```sql
+SELECT DISTINCT category FROM products
+```
+
+#### HAVING Clause
+- Filter grouped results after aggregation
+- Supports: `=`, `!=`, `<>`, `>`, `<`, `>=`, `<=`
+
+```sql
+HITUNG COUNT(*) DARI sales GROUP BY region HAVING count > 5
+```
+
+#### EXPLAIN Query Plan
+- Analyze query execution strategy before running
+- Shows: scan type, index usage, join methods, processing steps
+
+```sql
+EXPLAIN SELECT * FROM users WHERE id = 5
+-- Returns: { type: "SELECT", steps: [{ operation: "INDEX SCAN", method: "B-Tree Index Lookup" }] }
+```
+
+###  Security Improvements
+- **Password Hashing**: Server authentication now uses SHA-256 with random salt
+- **Timing-Safe Comparison**: Prevents timing attacks on password verification
+- **Input Validation**: Table and column names validated against injection
+- **Regex Injection Fix**: LIKE operator now escapes regex metacharacters
+
+###  Performance Optimizations
+- **Query Cache**: Replaced expensive `JSON.parse(JSON.stringify())` with shallow clone
+- **True LRU Cache**: Pager now properly tracks access order for eviction
+- **B-Tree Binary Search**: Index operations now use O(log n) binary search
+- **Aggregate Functions**: MIN/MAX use single-pass loop instead of spread operator (prevents stack overflow on large datasets)
+- **Reduced JSON Parsing**: DELETE/UPDATE operations parse JSON once instead of multiple times
+
+###  Bug Fixes
+- **Fixed `_deleteFullScan()`**: Method was passing undefined table name
+- **Removed duplicate code**: Cleaned up duplicate `_loadIndexes()`, pager checks, and exports
+- **Division by zero**: AVG now returns `null` for empty datasets instead of `Infinity`
+- **Type safety**: Added `parseInt` radix, changed loose equality (`==`) to strict (`===`)
+- **Buffer pool leak**: Buffers now returned to pool on read errors
+
+###  Code Quality
+- Removed duplicate method definitions
+- Added proper error handling for empty catch blocks
+- Improved code comments and documentation
+
+---
+
 ## [v2.5.0] - 2026-01-07
 
 ### 🚀 Major Performance Update

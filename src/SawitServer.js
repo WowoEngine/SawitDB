@@ -1,6 +1,7 @@
 const net = require('net');
 const crypto = require('crypto');
 const SawitDB = require('./WowoEngine');
+const KemitraanSawit = require('./modules/KemitraanSawit');
 const path = require('path');
 const fs = require('fs');
 
@@ -38,6 +39,9 @@ class SawitServer {
         this._log('info', `Max connections: ${this.maxConnections}`);
 
         this.walConfig = config.wal || { enabled: false };
+
+        // Inisialisasi Kemitraan Sawit (Inti-Plasma System)
+        this.kemitraan = new KemitraanSawit(this, config.kemitraan || {});
     }
 
     _validatePort(port) {
@@ -126,6 +130,10 @@ class SawitServer {
             console.log(`[Server] Listening on ${this.host}:${this.port}`);
             console.log(`[Server] Protocol: sawitdb://${this.host}:${this.port}/[database]`);
             console.log(`[Server] Ready to accept connections...`);
+
+            // Mulai kegiatan patroli kebun
+            this.kemitraan.mulaiPatroli();
+            console.log(`[Kemitraan] Status HGU: ${this.kemitraan.peran}`);
         });
 
         this.server.on('error', (err) => {
@@ -154,6 +162,7 @@ class SawitServer {
 
         // Close server
         if (this.server) {
+            this.kemitraan.berhentiPatroli(); // Stop patroli mandor
             this.server.close(() => {
                 console.log('[Server] Server stopped.');
             });
@@ -395,6 +404,27 @@ class SawitServer {
             }
         }
 
+        // 1.5 LAPORAN WARGA (Gotong Royong Info)
+        // 1.5 LAPORAN KEBUN (Cluster Info)
+        if (qUpper === 'LAPORAN KEBUN') {
+            const laporan = this.kemitraan.getLaporanAgraria();
+            const totalMitra = parseInt(laporan.luas_mitra);
+
+            const msg = totalMitra > 0
+                ? `Terpantau ${laporan.luas_mitra} plasma aktif beroperasi.`
+                : "Belum ada mitra plasma, Pak. Masih lahan tidur.";
+
+            // Format hasil agar enak dibaca di CLI
+            const result = `=== LAPORAN AGRARIA ===\nStatus HGU: ${laporan.status_hgu}\nKondisi: ${msg}\nDaftar Mitra: ${JSON.stringify(laporan.daftar_mitra, null, 2)}`;
+
+            return this._sendResponse(socket, {
+                type: 'query_result',
+                result,
+                query,
+                executionTime: Date.now() - startTime
+            });
+        }
+
         // 2. BUKA WILAYAH [nama]
         if (qUpper.startsWith('BUKA WILAYAH')) {
             const parts = query.trim().split(/\s+/);
@@ -562,6 +592,13 @@ class SawitServer {
                 query,
                 executionTime: duration
             });
+
+            // Trigger Distribusi Bibit (Replikasi) kalau ada perubahan data
+            // Cek apakah query merubah data (TANAM, PUPUK, GUSUR, BAKAR)
+            const upperQ = query.trim().toUpperCase();
+            if (['TANAM', 'PUPUK', 'GUSUR', 'INSERT', 'UPDATE', 'DELETE'].some(cmd => upperQ.startsWith(cmd))) {
+                this.kemitraan.distribusiBibit({ query, params, db: context.currentDatabase });
+            }
         } catch (err) {
             this._log('error', `Query failed: ${err.message} - Query: ${query}`);
             this.stats.errors++;

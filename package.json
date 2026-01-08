@@ -3,7 +3,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "version": "2.5.0",
+  "version": "2.6.0",
   "description": "A networked document database with Indonesian Agricultural Query Language (AQL) - Network Edition",
   "main": "src/WowoEngine.js",
   "scripts": {

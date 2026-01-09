@@ -28,6 +28,7 @@ yarn.lock
 # Logs
 logs/
 *.log
+*.cpo
 
 # Environment Variables
 .env

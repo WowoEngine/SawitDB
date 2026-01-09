@@ -2,6 +2,9 @@ const Pager = require('./modules/Pager');
 const QueryParser = require('./modules/QueryParser');
 const BTreeIndex = require('./modules/BTreeIndex');
 const WAL = require('./modules/WAL');
+const DBEventHandler = require("./services/event/DBEventHandler");
+const DBEvent = require("./services/event/DBEvent");
+
 
 /**
  * SawitDB implements the Logic over the Pager
@@ -10,6 +13,11 @@ class SawitDB {
     constructor(filePath, options = {}) {
         // WAL: Optional crash safety (backward compatible - disabled by default)
         this.wal = options.wal ? new WAL(filePath, options.wal) : null;
+        this.dbevent = options.dbevent ? options.dbevent : new DBEventHandler();
+        
+        if (!this.dbevent instanceof DBEvent) {
+          console.error(`dbevent is not instanceof DBEvent`);
+        }
 
         // Recovery: Replay WAL if exists
         if (this.wal && this.wal.enabled) {
@@ -108,6 +116,7 @@ class SawitDB {
 
         // QUERY CACHE - Optimized with shallow clone
         let cmd;
+        this.queryString = queryString;
         const cacheKey = queryString;
 
         if (this.queryCache.has(cacheKey) && !params) {
@@ -297,6 +306,7 @@ class SawitDB {
         p0.writeUInt32LE(numTables + 1, 8);
 
         this.pager.writePage(0, p0);
+        this.dbevent.OnTableCreated(name, this._findTableEntry(name),this.queryString);
         return `Kebun '${name}' telah dibuka.`;
     }
 
@@ -345,7 +355,7 @@ class SawitDB {
 
         p0.writeUInt32LE(numTables - 1, 8);
         this.pager.writePage(0, p0);
-
+        this.dbevent.OnTableDropped(name, entry, this.queryString);
         return `Kebun '${name}' telah dibakar (Drop).`;
     }
 
@@ -437,7 +447,8 @@ class SawitDB {
         if (startPageChanged) {
             this._updateTableLastPage(table, currentPageId);
         }
-
+        
+        this.dbevent.OnTableInserted(table,dataArray,this.queryString);
         return `${dataArray.length} bibit tertanam.`;
     }
 
@@ -781,8 +792,9 @@ class SawitDB {
         if (limit) end = start + limit;
         if (end > results.length) end = results.length;
         if (start > results.length) start = results.length;
-
-        return results.slice(start, end);
+        results = results.slice(start, end);
+        this.dbevent.OnTableSelected(table,results,this.queryString);
+        return results;
     }
 
     // Modifiy _scanTable to allow returning extended info (pageId) for internal use
@@ -870,7 +882,7 @@ class SawitDB {
 
         let currentPageId = (hintPageId !== -1) ? hintPageId : entry.startPage;
         let deletedCount = 0;
-
+        let deletedData=[];
         // Loop: If hint used, only loop once (unless next page logic needed, but pageId is specific)
         // We modify the while condition
 
@@ -900,6 +912,7 @@ class SawitDB {
                     if (table !== '_indexes' && parsedObj) {
                         this._removeFromIndexes(table, parsedObj);
                     }
+                    deletedData.push(parsedObj)
                     pageModified = true;
                 } else {
                     recordsToKeep.push({ len, data: pData.slice(offset + 2, offset + 2 + len) });
@@ -938,7 +951,8 @@ class SawitDB {
             // This ensures safety by re-calling _delete with forceFullScan=true
             return this._delete(table, criteria, true);
         }
-
+        
+        this.dbevent.OnTableInserted(table,deletedData,this.queryString);
         return `Berhasil menggusur ${deletedCount} bibit.`;
     }
 
@@ -970,6 +984,7 @@ class SawitDB {
 
         let currentPageId = (hintPageId !== -1) ? hintPageId : entry.startPage;
         let updatedCount = 0;
+        let updatedData=[]
 
         // OPTIMIZATION: In-place update instead of DELETE+INSERT
         while (currentPageId !== 0) {
@@ -1027,6 +1042,8 @@ class SawitDB {
                             updatedCount++;
                             break; // Exit loop as page structure changed
                         }
+                        
+                        updatedData.push(obj)
                     }
                 } catch (err) {
                     // Skip malformed JSON records
@@ -1049,7 +1066,7 @@ class SawitDB {
             // But to be safe, restart scan? For now let's hope hint works.
             // TODO: Fallback to full scan logic if mission critical.
         }
-
+        this.dbevent.OnTableUpdated(table,updatedData,this.queryString);
         return `Berhasil memupuk ${updatedCount} bibit.`;
     }
 

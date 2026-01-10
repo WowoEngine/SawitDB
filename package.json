@@ -4,7 +4,7 @@
     "access": "public"
   },
   "version": "2.6.0",
-  "description": "A networked document database with Indonesian Agricultural Query Language (AQL) - Network Edition",
+  "description": "A high-performance hybrid paged database with Agricultural Query Language (AQL) and Generic SQL support. Features single-file storage (.sawit), object caching, worker-thread parallelism, and crash recovery.",
   "main": "src/WowoEngine.js",
   "scripts": {
     "start": "node bin/sawit-server.js",

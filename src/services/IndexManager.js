@@ -41,14 +41,14 @@ class IndexManager {
 
         let allRecords = [];
         if (this.db._scanTable) {
-            // Use low-level scan if available
-            allRecords = this.db._scanTable(entry, null);
+            // Use low-level scan if available, WITH HINTS to capture _pageId
+            allRecords = this.db._scanTable(entry, null, null, true);
         } else if (this.db.query) {
             // Use high level query? Risky.
             // Assume _scanTable is preserved or moved to a Scanner.
             // For now, let's assume WowoEngine keeps _scanTable or we move it to TableScanner.
             // Let's use `db._scanTable` assuming it exists.
-            allRecords = this.db._scanTable(entry, null);
+            allRecords = this.db._scanTable(entry, null, null, true);
         }
 
         for (const record of allRecords) {

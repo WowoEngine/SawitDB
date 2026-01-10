@@ -968,12 +968,17 @@
                             <span class="text-sm text-gray-400">Coming Soon</span>
                         </div>
                         <ul class="list-disc list-outside text-gray-300 text-sm space-y-2 ml-4">
+                            <li><strong>Modular Architecture:</strong> Codebase refactored into service-oriented modules
+                                (Managers, Executors, Logic).</li>
                             <li><strong>True Multi-Threading:</strong> Worker Pool architecture with Least-Busy Load
                                 Balancing & Auto-Healing.</li>
-                            <li><strong>SQL Features:</strong>
+                            <li><strong>AQL Syntax Parity:</strong> Full support for <code
+                                    class="text-green-400">GABUNG</code> (Join), <code
+                                    class="text-green-400">URUTKAN</code> (Order By), <code
+                                    class="text-green-400">HANYA</code> (Limit), and more.</li>
+                            <li><strong>Advanced SQL:</strong>
                                 <ul class="list-disc ml-4 mt-1 text-gray-400 space-y-1">
-                                    <li><strong>JOINs:</strong> LEFT, RIGHT, FULL OUTER, CROSS (<code
-                                            class="text-green-400">GABUNG...</code>).</li>
+                                    <li><strong>JOINs:</strong> LEFT, RIGHT, FULL OUTER, CROSS.</li>
                                     <li><strong>DISTINCT:</strong> Remove duplicate rows.</li>
                                     <li><strong>HAVING:</strong> Filter grouped results.</li>
                                     <li><strong>EXPLAIN:</strong> Analyze query plans.</li>
@@ -983,8 +988,6 @@
                                 Injection Fix.</li>
                             <li><strong>Performance:</strong> Query Cloning (vs JSON.parse), True LRU Cache, B-Tree
                                 Binary Search, Optimized Aggregates.</li>
-                            <li><strong>Bug Fixes:</strong> Fixed <code class="text-red-300">_deleteFullScan</code>,
-                                code duplication, AVG division by zero, and buffer leaks.</li>
                         </ul>
                     </div>
 

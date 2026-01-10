@@ -50,16 +50,16 @@ SawitDB is built with the spirit of "Data Sovereignty". We believe a reliable da
 
 ## File List
 
-- `src/WowoEngine.js`: Core Database Engine (Class: `SawitDB`).
-- `src/SawitServer.js`: Server Class (TCP/Auth/ThreadPool).
+- `src/WowoEngine.js`: Core Database Engine Entry Point.
+- `src/SawitServer.js`: Server Class.
 - `src/SawitClient.js`: Client Class.
-- `src/modules/ThreadPool.js`: Worker Pool Manager.
-- `src/SawitWorker.js`: Worker Entry Point.
+- `src/modules/`: Core modules (QueryParser, BTreeIndex, WAL, Pager).
+- `src/services/`: Logic services (TableManager, IndexManager, QueryExecutor).
+- `src/services/executors/`: Specific query executors (Select, Insert, Update, Delete, Aggregate).
+- `src/services/logic/`: Complex logic handlers (JoinProcessor, ConditionEvaluator).
+- `src/server/`: Server components (AuthManager, RequestRouter, DatabaseRegistry).
 - `bin/sawit-server.js`: Server executable.
-- `cli/local.js`: Interactive CLI tool (Local).
-- `cli/remote.js`: Interactive CLI tool (Network).
-- `cli/test.js`: Unit Test Suite.
-- `cli/benchmark.js`: Performance Benchmark Tool.
+- `cli/`: Command Line Interface tools (local, remote, test, bench).
 - [CHANGELOG.md](CHANGELOG.md): Version history.
 
 ## Installation
